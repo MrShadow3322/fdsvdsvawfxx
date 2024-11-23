@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1a1d2e;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+    .header, .footer {
+      background-color: #23263a;
+      padding: 10px;
+      text-align: center;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      background-color: #2e3140;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .nav a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .nav a:hover {
+      background-color: #5567a6;
+      transform: scale(1.1);
+    }
+    .nav a.active {
+      background-color: #40568a;
+      transform: scale(1.1);
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .category {
+      background-color: #2e3140;
+      padding: 20px;
+      border-radius: 10px;
+      transition: background-color 0.3s, transform 0.3s;
+      cursor: pointer;
+    }
+    .category:hover {
+      background-color: #5567a6;
+      transform: scale(1.1);
+    }
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .form input, .form textarea {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #2e3140;
+      color: #ffffff;
+      transition: background-color 0.3s;
+    }
+    .form input:focus, .form textarea:focus {
+      background-color: #35405d;
+      outline: none;
+    }
+    .form button {
+      background-color: #5567a6;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .form button:hover {
+      background-color: #40568a;
+    }
+    .search-bar input {
+      width: 80%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #2e3140;
+      color: #ffffff;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .search-bar input:focus {
+      background-color: #35405d;
+      outline: none;
+    }
+    .seller-button {
+      margin-top: 50px;
+      background-color: #5567a6;
+      color: #ffffff;
+      border: none;
+      padding: 15px;
+      border-radius: 50px;
+      width: 80%;
+      max-width: 300px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      animation: pulse 2s infinite;
+      transition: transform 0.3s;
+    }
+    .seller-button:hover {
+      transform: scale(1.1);
+      background-color: #40568a;
+    }
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Marketplace</h1>
+  </header>
+  <nav class="nav">
+    <a href="javascript:void(0);" id="main-link" onclick="showPage('main')">Главная</a>
+    <a href="javascript:void(0);" id="search-link" onclick="showPage('search')">Поиск</a>
+    <a href="javascript:void(0);" id="profile-link" onclick="showPage('profile')">Профиль</a>
+  </nav>
+  <main class="content">
+    <!-- Главная -->
+    <section id="main" class="page">
+      <h2>Категории</h2>
+      <div class="categories">
+        <div class="category">Для дома</div>
+        <div class="category">Техника</div>
+        <div class="category">Одежда</div>
+      </div>
+      <button class="seller-button" onclick="openSellerForm()">Стать продавцом</button>
+    </section>
+    <!-- Поиск -->
+    <section id="search" class="page" style="display: none;">
+      <h2>Поиск товаров</h2>
+      <div class="search-bar">
+        <input type="text" placeholder="Введите запрос для поиска">
+      </div>
+    </section>
+    <!-- Профиль -->
+    <section id="profile" class="page" style="display: none;">
+      <h2>Профиль</h2>
+      <p>Ваш уникальный ID: <span id="user-id"></span></p>
+    </section>
+    <!-- Форма для продавцов -->
+    <section id="seller-form" class="page" style="display: none;">
+      <h2>Форма для продавцов</h2>
+      <form class="form" onsubmit="submitSellerForm(event)">
+        <input type="text" id="seller-number" placeholder="Ваш номер" required>
+        <textarea id="seller-description" placeholder="Описание" required></textarea>
+        <button type="submit">Отправить заявку</button>
+      </form>
+    </section>
+  </main>
+  <footer class="footer">
+    Marketplace © 2024
+  </footer>
+  <script>
+    const CHAT_ID = '1258306425';
+    const BOT_TOKEN = '7262467632:AAGv2FmMkHDcQKzYSLbw1VNtdapGi1pAw40';
+
+    // Генерация уникального ID для устройства
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+      userId = 'user-' + Date.now();
+      localStorage.setItem('userId', userId);
+    }
+    document.getElementById('user-id').textContent = userId;
+
+    // Функция переключения страниц
+    function showPage(pageId) {
+      // Скрываем все страницы
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.style.display = 'none');
+      
+      // Показываем выбранную страницу
+      const activePage = document.getElementById(pageId);
+      if (activePage) {
+        activePage.style.display = 'block';
+      }
+
+      // Убираем активный класс с всех ссылок и добавляем только к активной
+      const navLinks = document.querySelectorAll('.nav a');
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.getElementById(pageId + '-link');
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+
+    // Открытие формы для продавца
+    function openSellerForm() {
+      showPage('seller-form');
+    }
+
+    // Отправка данных формы продавца в Telegram
+    function submitSellerForm(event) {
+      event.preventDefault();
+
+      const number = document.getElementById('seller-number').value;
+      const description = document.getElementById('seller-description').value;
+
+      const message = `Новый запрос от продавца:\n\nID: ${userId}\nНомер: ${number}\nОписание: ${description}`;
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          alert('Заявка успешно отправлена!');
+          showPage('main'); // Перехожу на главную страницу после отправки
+        })
+        .catch(error => {
+          alert('Ошибка при отправке заявки!');
+        });
+    }
+
+    // Первая страница (Главная) по умолчанию
+    showPage('main');
+  </script>
+</body>
+</html>
